@@ -32,11 +32,13 @@ Os dados são baixados automaticamente na primeira execução do notebook, porta
 
 1. Leitura das bases `freMTPL2freq` e `freMTPL2sev`.
 2. Análise exploratória e verificação de valores ausentes.
-3. Pré-processamento: tratamento de variáveis categóricas (dummies para os GLMs, Label Encoding para o XGBoost) e divisão treino/teste (80%/20%, `random_state = 42`).
-4. GLM Poisson para frequência, com `log(Exposure)` como offset.
-5. GLM Gamma para severidade, restrito aos registros com sinistro.
-6. XGBoost com objetivos `count:poisson` e `reg:gamma` (200 estimadores, profundidade 4, taxa de aprendizado 0,05).
-7. Avaliação por MSE, MAE e deviance, e importância de variáveis.
+3. Pré-processamento: dummies para os GLMs e Label Encoding (um único mapeamento para treino e teste) para o XGBoost.
+4. Divisão treino/teste (80%/20%, `random_state = 42`) das apólices; os sinistros de cada apólice acompanham a divisão, de modo que nenhuma apólice de teste é usada no ajuste da severidade.
+5. GLM Poisson para frequência, com `log(Exposure)` como offset, inclusive na predição.
+6. GLM Gamma para severidade, restrito aos registros com sinistro.
+7. XGBoost com objetivos `count:poisson` (alvo: frequência anualizada, ponderada pela exposição) e `reg:gamma` — 200 estimadores, profundidade 4, taxa de aprendizado 0,05.
+8. Avaliação no conjunto de teste: MSE, MAE e deviance média (Poisson e Gamma) para frequência e severidade, razão predito/observado na frequência, e MSE e MAE do prêmio puro por apólice.
+9. Importância de variáveis do XGBoost.
 
 ## Como executar
 
